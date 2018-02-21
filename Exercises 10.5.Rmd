@@ -2,15 +2,12 @@
 title: "Exercises 10.5"
 author: "Tiffany Cheng"
 date: "February 20, 2018"
-output:
-  word_document: default
-  pdf_document: default
+output: pdf_document
 ---
 
-```{r,echo=FALSE}
+```{r,echo=FALSE,message=FALSE,warning=FALSE}
 # load library
 library(tidyverse)
-library(tibble)
 ```
 
 ## 1. How can you tell if an object is a tibble? (Hint: try printing `mtcars`, which is a regular data frame).
@@ -34,7 +31,7 @@ tib[, c("abc", "xyz")] # returns a tibble
 ```
 These differences can cause frustration when there are column names that have the same words in it, but you only want to select a certain column.
 
-## 3. If you have the name of a variable stored in an object, e.g. `var <- "mpg"`, how can you extract the reference variable from a tibble?
+## 3. If you have the name of a variable stored in an object, `e.g. var <- "mpg"`, how can you extract the reference variable from a tibble?
 ```{r}
 var <- "xyz"
 tib[[var]] # returns a vector
