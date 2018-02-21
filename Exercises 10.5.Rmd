@@ -1,0 +1,85 @@
+---
+title: "Exercises 10.5"
+author: "Tiffany Cheng"
+date: "February 20, 2018"
+output:
+  word_document: default
+  pdf_document: default
+---
+
+```{r,echo=FALSE}
+# load library
+library(tidyverse)
+library(tibble)
+```
+
+## 1. How can you tell if an object is a tibble? (Hint: try printing `mtcars`, which is a regular data frame).
+```{r}
+print(mtcars)
+class(mtcars)
+```
+When a tibble is printed to the console, it will only print the first 10 lines of the data and it will mention that it is of class `tibble` and each column will have the type of data stored in it, such as integer, factor, etc. Here, `mtcars` is a data frame because such labeling does not exist.
+
+## 2. Compare and contrast the following operations on a `data.frame` and equivalent tibble. What is different? Why might the default data frame behaviours cause you frustration?
+```{r}
+df <- data.frame(abc = 1, xyz = "a")
+df$x # returns the column with an "x" in it
+df[, "xyz"] # returns a data frame with xyz as a factor
+df[, c("abc", "xyz")] # returns a data frame
+
+tib <- tibble(abc = 1, xyz = "a")
+tib$x # returns nothing, does not do partial matching
+tib[, "xyz"] # returns a tibble with xyz as a character
+tib[, c("abc", "xyz")] # returns a tibble
+```
+These differences can cause frustration when there are column names that have the same words in it, but you only want to select a certain column.
+
+## 3. If you have the name of a variable stored in an object, e.g. `var <- "mpg"`, how can you extract the reference variable from a tibble?
+```{r}
+var <- "xyz"
+tib[[var]] # returns a vector
+tib[var] # returns a tibble
+```
+
+## 4. Practice referring to non-syntactic names in the following data frame by:
+```{r}
+annoying <- tibble(
+  `1` = 1:10,
+  `2` = `1` * 2 + rnorm(length(`1`))
+)
+```
+
+### 1. Extracting the variable called `1`.
+```{r}
+annoying$`1`
+```
+
+### 2. Plotting a scatterplot of `1` vs `2`.
+```{r}
+ggplot(data=annoying) + geom_point(mapping=aes(x=annoying$`1`,y=annoying$`2`))
+```
+
+### 3. Creating a new column called `3` which is `2` divided by `1`.
+```{r}
+annoying <- 
+  annoying %>% mutate(`3`=`2`/`1`)
+annoying
+```
+
+### 4. Renaming the columns to `one`, `two` and `three`.
+```{r}
+annoying <- 
+  annoying %>% rename(one=`1`,two=`2`,three=`3`)
+annoying
+```
+
+## 5. What does `tibble::enframe()` do? When might you use it?
+
+`enframe()` converts vectors to tibbles and `deframe()` does the opposite. This can be used when you have a list and would like to turn it into a dataset.
+
+## 6. What option controls how many additional column names are printed at the footer of a tibble?
+
+`tibble.max_extra_cols` controls the additional column names printed at the footer of the tibble.
+```{r}
+options(tibble.max_extra_cols=2) # for example
+```

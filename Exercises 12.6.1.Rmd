@@ -1,0 +1,66 @@
+---
+title: "Exercises 12.6.1"
+author: "Tiffany Cheng"
+date: "February 20, 2018"
+output:
+  word_document: default
+  pdf_document: default
+---
+
+```{r,echo=FALSE}
+# load library
+library(tidyverse)
+library(ggplot2)
+```
+
+## 1. In this case study I set `na.rm = TRUE` just to make it easier to check that we had the correct values. Is this reasonable? Think about how missing values are represented in this dataset. Are there implicit missing values? What’s the difference between an `NA` and zero?
+
+I think to quickly check if the values were correct, removing the NAs is reasonable. However, I think that the NAs in this dataset represent both explicit and implicit missing values, so removing them all would be a mistake. `NA` is used when there is no data for the variable recorded while a zero could be a actual data observation.
+
+## 2. What happens if you neglect the `mutate()` step? (`mutate(key = stringr::str_replace(key, "newrel", "new_rel"))`)
+
+If you neglect the `mutate()` step, then separating the `key` column into `new`, `type`, and `sexage` would require an extra step since `newrel` is not separated by a "_". This step makes the data more consistent.
+
+## 3. I claimed that `iso2` and `iso3` were redundant with `country`. Confirm this claim.
+```{r, echo=FALSE}
+tidyr::who
+```
+```{r}
+who1 <- who %>% 
+  gather(new_sp_m014:newrel_f65, key = "key", value = "cases", na.rm = TRUE) %>%
+  mutate(key = stringr::str_replace(key, "newrel", "new_rel")) %>%
+  separate(key, c("new", "type", "sexage"), sep = "_") %>%
+  count(iso2,iso3)
+head(who1)
+```
+`iso2` seems to be a two-letter abbreviation for the country name and `iso3` seems to be a three-letter abbreviation for the country name. Therefore, if we keep the `country` column, these two column are redundant because they carry the same information.
+
+## 4. For each country, year, and sex compute the total number of cases of TB. Make an informative visualisation of the data.
+```{r}
+# Tidying data.
+who2 <- who %>% 
+  gather(new_sp_m014:newrel_f65, key = "key", value = "cases", na.rm = TRUE) %>%
+  mutate(key = stringr::str_replace(key, "newrel", "new_rel")) %>%
+  separate(key, c("new", "type", "sexage"), sep = "_") %>%
+  select(-new, -iso2, -iso3) %>%
+  separate(sexage, c("sex", "age"), sep = 1)
+
+# Calculating number of cases (n) by country, year, and sex.
+country <- who2 %>%
+  count(country, wt=cases)
+head(country)
+year <- who2 %>%
+  count(year, wt=cases)
+head(year)
+sex <- who2 %>%
+  count(sex, wt=cases)
+head(sex)
+
+# Creating informative visualizations of the data.
+ggplot(data=country) +
+  geom_point(mapping=aes(x=country,y=n))
+ggplot(data=year) +
+  geom_point(mapping=aes(x=year,y=n))
+ggplot(data=sex) +
+  geom_point(mapping=aes(x=sex,y=n))
+```
