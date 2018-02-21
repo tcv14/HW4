@@ -2,12 +2,10 @@
 title: "Exercises 12.6.1"
 author: "Tiffany Cheng"
 date: "February 20, 2018"
-output:
-  word_document: default
-  pdf_document: default
+output: pdf_document
 ---
 
-```{r,echo=FALSE}
+```{r,echo=FALSE,message=FALSE,warning=FALSE}
 # load library
 library(tidyverse)
 library(ggplot2)
@@ -21,7 +19,7 @@ I think to quickly check if the values were correct, removing the NAs is reasona
 
 If you neglect the `mutate()` step, then separating the `key` column into `new`, `type`, and `sexage` would require an extra step since `newrel` is not separated by a "_". This step makes the data more consistent.
 
-## 3. I claimed that `iso2` and `iso3` were redundant with `country`. Confirm this claim.
+## 3. I claimed that `iso2` and `iso3` were redundant with country. Confirm this claim.
 ```{r, echo=FALSE}
 tidyr::who
 ```
