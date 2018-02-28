@@ -1,0 +1,57 @@
+---
+title: "Tidy Data Article"
+author: "Tiffany Cheng"
+date: "February 27, 2018"
+output: pdf_document
+---
+
+```{r,echo=FALSE,message=FALSE,warning=FALSE}
+library(tidyverse)
+library(dplyr)
+source('pew.r')
+saveRDS(raw, "rawdat.RDS")
+```
+
+## Table 4 to Table 6
+```{r}
+# Read in data
+raw <- readRDS("rawdat.RDS")
+
+# Table 4 (first 10 rows only)
+knitr::kable(head(raw,10))
+
+# Tidy raw data set
+raw.tidy <- raw %>% gather(key="Income", value="Frequency",-religion)
+raw.order <- raw.tidy %>% arrange(religion)
+
+# Table 6 (first 10 rows only)
+knitr::kable(head(raw.order,10))
+```
+
+\newpage
+
+## Table 7 to Table 8
+```{r,message=FALSE,warning=FALSE}
+# Read in data
+billboard <- read_csv("billboard.csv")
+
+# Table 7 (first 8 rows)
+knitr::kable(head(billboard,8))
+
+# Tidy billboard data set
+billboard.tidy <- billboard %>%
+  gather(key="week", value="rank",-year, -artist.inverted, -track, -time, -genre, -date.entered, -date.peaked) %>%
+  arrange(artist.inverted,track) %>%
+  filter(!is.na(rank)) %>%
+  separate(week,c("A","week","B"),sep=c(1,2),convert=TRUE) %>%
+  separate(time,c("C","time","D"),sep=c(1,5),covert=TRUE) %>%
+  select(-date.peaked,-genre,-A,-B,-C,-D) %>%
+  dplyr::rename("artist"="artist.inverted","date"="date.entered") %>%
+  mutate(date=date+(week-1)*7)
+
+# Rearange column order
+billboard.tidy <- billboard.tidy[c(1,2,4,3,5,6,7)]
+
+# Table 8 (first 15 rows)
+knitr::kable(head(billboard.tidy,15))
+```
